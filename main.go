@@ -6,10 +6,20 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"strings"
 )
 
 func main() {
-	args := os.Args[1:]
+	var args []string
+
+	for _, val := range os.Args[1:] {
+		if strings.HasPrefix(val, "--") || strings.HasPrefix(val, "-") {
+			continue
+		} else {
+			args = append(args, val)
+		}
+	}
+
 	if len(args) == 0 {
 		fmt.Printf("Error: missing project name \n\nusage: goinit <project_name>\n\n")
 		os.Exit(0)
@@ -36,12 +46,12 @@ func main() {
 	}
 	fmt.Printf("created project at %s", filePath)
 
-	for _, a := range args {
+	for _, a := range os.Args {
 		if a == "--open" {
 			editor := os.Getenv("EDITOR")
 
 			var cmd *exec.Cmd
-			if editor == "code" || editor == "code-insider" {
+			if editor == "code" || editor == "code-insiders" {
 				cmd = exec.Command(editor, projectPath, "--goto", filePath)
 			} else {
 				cmd = exec.Command(editor, projectPath)
@@ -53,9 +63,7 @@ func main() {
 
 }
 
-const mainFileContent = `
-package main
-
+const mainFileContent = `package main
 import "fmt"
 
 func main() {
