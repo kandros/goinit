@@ -7,9 +7,14 @@ import (
 	"os/exec"
 	"path"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 func main() {
+
+	viper.SetDefault("orgName", "")
+
 	var args []string
 
 	for _, val := range os.Args[1:] {
@@ -21,14 +26,23 @@ func main() {
 	}
 
 	if len(args) == 0 {
-		fmt.Printf("Error: missing project name \n\nusage: goinit <project_name>\n\n")
-		os.Exit(0)
+		var projectName string
+		fmt.Print("project name: ")
+		fmt.Scan(&projectName)
+		viper.Set("projectName", projectName)
+	}
+
+	if viper.GetString("orgName") == "" {
+		var orgName string
+		fmt.Print("orgname: ")
+		fmt.Scan(&orgName)
+		viper.Set("orgName", orgName)
 	}
 
 	gopath := os.Getenv("GOPATH")
-	projectName := args[0]
-	username := "kandros"
-	orgPath := "src/github.com/" + username
+	projectName := viper.GetString("projectName")
+	orgName := viper.GetString("orgName")
+	orgPath := "src/github.com/" + orgName
 	fileName := "main.go"
 	projectPath := path.Join(gopath, orgPath, projectName)
 	filePath := path.Join(projectPath, fileName)
