@@ -1,6 +1,6 @@
 # goinit
 
-small utility to create new go projects inside GOPATH
+small utility to create new go projects inside GOPATH and open it using `$EDITOR`
 
 ## usage
 
@@ -19,8 +19,7 @@ func main() {
 }
 ```
 
-- org_name is asked at first usage and store in `~/.goinit/config`
-- if multiple orgs are saved you will be prompted which one to use
+> org_name is asked at first usage and store in `~/.goinit/config.yaml`
 
 ### flags
 
@@ -28,4 +27,4 @@ func main() {
 
   - if the org_name provided is not yet saved it will promt to create and save it
 
-- `--open` will open the project created using eidtor configured in ENV `$EDITOR`
+- `--no-open` will prevent editor opening

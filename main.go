@@ -12,8 +12,23 @@ import (
 )
 
 func main() {
+	home := os.Getenv("HOME")
+	viper.SetConfigFile(home + "/.goinit/config.yaml")
+	viper.SetDefault("orgname", "")
+	viper.SetDefault("open_in_editor", true)
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {             // Handle errors reading the config file
+		if _, err := os.Stat(home + "/.goinit/config.yaml"); os.IsNotExist(err) {
+			os.MkdirAll(home+"/.goinit", 0777)
+			os.Create(home + "/.goinit/config.yaml")
+		}
+	}
 
-	viper.SetDefault("orgName", "")
+	for _, a := range os.Args {
+		if a == "--no-open" {
+			viper.Set("open_in_editor", false)
+		}
+	}
 
 	var args []string
 
@@ -26,25 +41,31 @@ func main() {
 	}
 
 	if len(args) == 0 {
-		var projectName string
+		var projectname string
 		fmt.Print("project name: ")
-		fmt.Scan(&projectName)
-		viper.Set("projectName", projectName)
+		fmt.Scan(&projectname)
+		viper.Set("projectname", projectname)
+	} else {
+		viper.Set("projectname", args[0])
 	}
 
-	if viper.GetString("orgName") == "" {
-		var orgName string
+	if viper.GetString("orgname") == "" {
+		var orgname string
 		fmt.Print("orgname: ")
-		fmt.Scan(&orgName)
-		viper.Set("orgName", orgName)
+		fmt.Scan(&orgname)
+		viper.Set("orgname", orgname)
+		err := viper.WriteConfig()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	gopath := os.Getenv("GOPATH")
-	projectName := viper.GetString("projectName")
-	orgName := viper.GetString("orgName")
-	orgPath := "src/github.com/" + orgName
+	projectname := viper.GetString("projectname")
+	orgname := viper.GetString("orgname")
+	orgPath := "src/github.com/" + orgname
 	fileName := "main.go"
-	projectPath := path.Join(gopath, orgPath, projectName)
+	projectPath := path.Join(gopath, orgPath, projectname)
 	filePath := path.Join(projectPath, fileName)
 
 	if _, err := os.Stat(projectPath); !os.IsNotExist(err) {
@@ -53,26 +74,24 @@ func main() {
 	}
 
 	os.MkdirAll(projectPath, 0777)
-	err := ioutil.WriteFile(filePath, []byte(mainFileContent), 0777)
+	err = ioutil.WriteFile(filePath, []byte(mainFileContent), 0777)
 
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("created project at %s", filePath)
 
-	for _, a := range os.Args {
-		if a == "--open" {
-			editor := os.Getenv("EDITOR")
+	if viper.GetBool("open_in_editor") {
+		editor := os.Getenv("EDITOR")
 
-			var cmd *exec.Cmd
-			if editor == "code" || editor == "code-insiders" {
-				cmd = exec.Command(editor, projectPath, "--goto", filePath)
-			} else {
-				cmd = exec.Command(editor, projectPath)
-			}
-
-			cmd.Start()
+		var cmd *exec.Cmd
+		if editor == "code" || editor == "code-insiders" {
+			cmd = exec.Command(editor, projectPath, "--goto", filePath)
+		} else {
+			cmd = exec.Command(editor, projectPath)
 		}
+
+		cmd.Start()
 	}
 
 }
