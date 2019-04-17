@@ -23,7 +23,7 @@ func main() {
 
 ## install
 
-`go get github.com/kandros/goinit`
+`go get -u github.com/kandros/goinit`
 
 ### flags
 
