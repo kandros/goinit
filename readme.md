@@ -19,16 +19,12 @@ func main() {
 }
 ```
 
-> org_name is asked at first usage and store in `~/.goinit/config.yaml`
+> org_name is asked at first usage and value is stored in `~/.goinit/config.yaml` for next usages
 
 ## install
 
 `go get -u github.com/kandros/goinit`
 
 ### flags
-
-- `—-org <org_name>` will use a specific org
-
-  - if the org_name provided is not yet saved it will promt to create and save it
 
 - `--no-open` will prevent editor opening
