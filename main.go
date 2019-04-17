@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path"
 	"strings"
+
+	"github.com/kandros/goutil/editorutil"
 
 	"github.com/spf13/viper"
 )
@@ -79,19 +80,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("created project at %s", filePath)
+	fmt.Printf("created project at %s\n", filePath)
 
 	if viper.GetBool("open_in_editor") {
-		editor := os.Getenv("EDITOR")
-
-		var cmd *exec.Cmd
-		if editor == "code" || editor == "code-insiders" {
-			cmd = exec.Command(editor, projectPath, "--goto", filePath)
-		} else {
-			cmd = exec.Command(editor, projectPath)
-		}
-
-		cmd.Start()
+		editorutil.OpenProjectInEditor(projectPath, filePath)
 	}
 
 }
