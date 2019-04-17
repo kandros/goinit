@@ -21,6 +21,10 @@ func main() {
 
 > org_name is asked at first usage and store in `~/.goinit/config.yaml`
 
+## install
+
+`go get github.com/kandros/goinit`
+
 ### flags
 
 - `—-org <org_name>` will use a specific org
