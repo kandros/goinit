@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	gomain "github.com/kandros/gomain/pkg"
+	"github.com/kandros/goutil/editorutil"
 	"github.com/spf13/viper"
 )
 
@@ -83,7 +84,10 @@ func main() {
 		panic(err)
 	}
 
-	openInEditor := viper.GetBool("open_in_editor")
-	gomain.Run(openInEditor)
+	gomain.CreateMainFile()
+	gomain.CreateMainTestFile()
+	if viper.GetBool("open_in_editor") {
+		editorutil.OpenProjectInEditor(projectPath, filePath)
+	}
 
 }
