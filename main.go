@@ -2,13 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
 
-	"github.com/kandros/goutil/editorutil"
-
+	gomain "github.com/kandros/gomain/pkg"
 	"github.com/spf13/viper"
 )
 
@@ -75,23 +73,17 @@ func main() {
 	}
 
 	os.MkdirAll(projectPath, 0777)
-	err = ioutil.WriteFile(filePath, []byte(mainFileContent), 0777)
-
 	if err != nil {
 		panic(err)
 	}
 	fmt.Printf("created project at %s\n", filePath)
 
-	if viper.GetBool("open_in_editor") {
-		editorutil.OpenProjectInEditor(projectPath, filePath)
+	err = os.Chdir(projectPath)
+	if err != nil {
+		panic(err)
 	}
 
-}
+	openInEditor := viper.GetBool("open_in_editor")
+	gomain.Run(openInEditor)
 
-const mainFileContent = `package main
-import "fmt"
-
-func main() {
-	fmt.Println("hello")
 }
-`
